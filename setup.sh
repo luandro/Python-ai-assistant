@@ -25,21 +25,61 @@ fi
 #-----------------------------------
 # System dependencies installation
 #-----------------------------------
-sudo apt-get update && /
-sudo apt-get install build-essential && /
-sudo apt-get install python3-dev && /
-sudo apt-get install python3-setuptools && /
-sudo apt-get install python3-pip && /
-sudo apt-get install python3-venv && /
-sudo apt-get install portaudio19-dev python3-pyaudio python3-pyaudio && /
-sudo apt-get install libasound2-plugins libsox-fmt-all libsox-dev libxml2-dev libxslt-dev sox ffmpeg && /
-sudo apt-get install espeak && /
-sudo apt-get install libcairo2-dev libgirepository1.0-dev gir1.2-gtk-3.0  && /
-sudo apt install mongodb && /
-sudo apt-get install gnupg
+if command -v apt-get >/dev/null 2>&1; then
+    echo "${green}apt-get found, proceeding with installation...${reset}"
+    sudo apt-get update && \
+    sudo apt-get install -y build-essential && \
+    sudo apt-get install -y python3-dev && \
+    sudo apt-get install -y python3-setuptools && \
+    sudo apt-get install -y python3-pip && \
+    sudo apt-get install -y python3-venv && \
+    sudo apt-get install -y portaudio19-dev python3-pyaudio python3-pyaudio && \
+    sudo apt-get install -y libasound2-plugins libsox-fmt-all libsox-dev libxml2-dev libxslt-dev sox ffmpeg && \
+    sudo apt-get install -y espeak && \
+    sudo apt-get install -y libcairo2-dev libgirepository1.0-dev gir1.2-gtk-3.0  && \
+    sudo apt install -y mongodb && \
+    sudo apt-get install -y gnupg
+    # Reload local package database
+    sudo apt-get update
 
-# Reload local package database
-sudo apt-get update
+elif command -v dnf >/dev/null 2>&1; then
+    echo "${green}dnf found, proceeding with installation...${reset}"
+    sudo dnf update &&\
+    sudo dnf install -y python3 &&\
+    sudo dnf install -y python3-setuptools &&\
+    sudo dnf install -y python3-pip &&\
+    sudo dnf install -y python3-virtualenv &&\
+    sudo dnf install -y portaudio python-pyaudio &&\
+    sudo dnf install -y alsa-plugins-oss sox libxml2 libxslt sox && \
+    #ffmpeg (Not required?)
+    sudo dnf install -y espeak &&\
+    sudo dnf install -y cairo gobject-introspection openssl gtk3 gnupg &&\
+    sudo dnf update
+
+
+elif command -v pacman >/dev/null 2>&1; then
+    echo "${green}pacman found, proceeding with installation...${reset}"
+    sudo pacman -Syu --noconfirm && \
+    sudo pacman -S --noconfirm base-devel && \
+    sudo pacman -S --noconfirm python && \
+    sudo pacman -S --noconfirm python-setuptools && \
+    sudo pacman -S --noconfirm python-pip && \
+    sudo pacman -S --noconfirm python-virtualenv && \
+    sudo pacman -S --noconfirm portaudio python-pyaudio && \
+    sudo pacman -S --noconfirm alsa-plugins sox libxml2 libxslt sox ffmpeg && \
+    sudo pacman -S --noconfirm espeak-ng && \
+    sudo pacman -S --noconfirm cairo gobject-introspection openssl gtk3 gnupg && \
+    if ! command -v yay >/dev/null 2>&1; then
+        echo "${red}yay not found, installing yay...${reset}"
+        sudo pacman -S --noconfirm git && \
+        git clone https://aur.archlinux.org/yay.git && \
+        cd yay && \
+        makepkg -si --noconfirm && \
+        cd .. && \
+        rm -rf yay
+    fi
+    yay -S --noconfirm mongodb-bin
+else
 
 RESULT=$?
 if  [ $RESULT -eq 0 ]; then
